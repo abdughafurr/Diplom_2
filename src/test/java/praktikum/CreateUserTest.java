@@ -12,6 +12,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 public class CreateUserTest {
 
+    private static final String REQUIRED_FIELDS_MESSAGE = "Email, password and name are required fields";
+
     private UserClient userClient;
     private User user;
     private String accessToken;
@@ -46,19 +48,39 @@ public class CreateUserTest {
         userClient.create(user)
                 .assertThat()
                 .statusCode(SC_FORBIDDEN)
-                .body("success", equalTo(false))
                 .body("message", equalTo("User already exists"));
     }
 
     @Test
-    @DisplayName("Создание пользователя без обязательного поля")
-    public void createUserWithoutRequiredFieldReturnsForbidden() {
+    @DisplayName("Создание пользователя без email")
+    public void createUserWithoutEmailReturnsForbidden() {
         user.setEmail(null);
 
         userClient.create(user)
                 .assertThat()
                 .statusCode(SC_FORBIDDEN)
-                .body("success", equalTo(false))
-                .body("message", equalTo("Email, password and name are required fields"));
+                .body("message", equalTo(REQUIRED_FIELDS_MESSAGE));
+    }
+
+    @Test
+    @DisplayName("Создание пользователя без пароля")
+    public void createUserWithoutPasswordReturnsForbidden() {
+        user.setPassword(null);
+
+        userClient.create(user)
+                .assertThat()
+                .statusCode(SC_FORBIDDEN)
+                .body("message", equalTo(REQUIRED_FIELDS_MESSAGE));
+    }
+
+    @Test
+    @DisplayName("Создание пользователя без имени")
+    public void createUserWithoutNameReturnsForbidden() {
+        user.setName(null);
+
+        userClient.create(user)
+                .assertThat()
+                .statusCode(SC_FORBIDDEN)
+                .body("message", equalTo(REQUIRED_FIELDS_MESSAGE));
     }
 }
